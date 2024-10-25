@@ -9,4 +9,5 @@ runs:
   using: composite
   steps:
   - name: Do neida deu build
+    shell: bash
     run: docker build . --file ./src/main/docker/Dockerfile.jvm --tag academy:$(date +%s) && docker images
