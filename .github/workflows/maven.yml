@@ -25,7 +25,7 @@ jobs:
         run: mvn test
 
       - name: Push Docker Image
-        uses: BrunooMPS/academy/.github/actions/push_docker_image@main
+        uses: BrunooMPS/academy/.github/actions/docker_build@main
         with:
           docker_username: ${{ vars.DOCKERHUB_USERNAME }}
           docker_image_name: image-name
