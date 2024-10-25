@@ -19,21 +19,14 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.tag_name }}" ]; then
-          TAG=$(date +%s)
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=$(date +%s)" >> $GITHUB_ENV
         else
-          TAG="${{ inputs.tag_name }}"
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
         fi
 
-    - name: Validate and Build Docker Image
+    - name: Build Docker Image
       shell: bash
       run: |
-        if [ -z "${{ inputs.image_name }}" ]; then
-          echo "Error: 'image_name' input is required." >&2
-          exit 1
-        fi
-
         NAME="${{ inputs.image_name }}:$TAG"
         docker build . --file "${{ inputs.path_dockerfile }}" --tag "$NAME"
         echo "DOCKER_IMAGE_NAME=$NAME" >> $GITHUB_ENV
