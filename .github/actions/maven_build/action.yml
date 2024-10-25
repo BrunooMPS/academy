@@ -17,3 +17,5 @@ runs:
   - name: Build with Maven
     shell: bash
     run: mvn -B package -DskipTests --file pom.xml && docker images
+  - name: Build Docker image
+    run: docker build -t my-image-name .
