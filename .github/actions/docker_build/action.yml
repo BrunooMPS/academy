@@ -25,6 +25,12 @@ runs:
           exit 1
         fi
 
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.docker_username }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}  # Ensure to add your Docker Hub password in secrets
+
     - name: Tag Docker Image
       shell: bash
       run: |
@@ -37,12 +43,6 @@ runs:
           echo "Error tagging image."
           exit 1
         fi
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ inputs.docker_username }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}  # Ensure to add your Docker Hub password in secrets
 
     - name: Push Docker Image
       shell: bash
