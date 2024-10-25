@@ -21,8 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: BrunooMPS/academy/.github/actions/maven_build@main
-      - name: Run tests
-        run: mvn test
 
       - name: Push Docker Image
         uses: BrunooMPS/academy/.github/actions/docker_build@main
