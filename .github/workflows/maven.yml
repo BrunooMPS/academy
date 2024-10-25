@@ -18,6 +18,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}  # Set Docker Hub username as an environment variable
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}      # Set Docker Hub token as an environment variable
     steps:
       - uses: actions/checkout@v4
       - uses: BrunooMPS/academy/.github/actions/maven_build@main
@@ -25,5 +28,5 @@ jobs:
       - name: Push Docker Image
         uses: BrunooMPS/academy/.github/actions/docker_build@main
         with:
-          docker_username: ${{ vars.DOCKERHUB_USERNAME }}
+          docker_username: ${{ env.DOCKERHUB_USERNAME }}  # Use environment variable
           docker_image_name: image-name
