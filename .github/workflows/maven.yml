@@ -20,4 +20,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package -DskipTests --file pom.xml
+      run: mvn -B package -DskipTests --file pom.xml    
+    - name: Do neida deu build 
+      run: docker build . --file ./src/docker --tag academy:$(date +%s)
