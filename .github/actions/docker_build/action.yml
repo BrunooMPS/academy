@@ -1,45 +1,40 @@
-name: Build
-description: Build application with Maven and create a new Docker image
+name: Push Docker Image
+description: Push the Docker image to Docker Hub
 inputs:
-  path_dockerfile:
-    description: "Path to the Dockerfile"
-    required: false
-    default: "./src/main/docker/Dockerfile.jvm"
-  image_name:
-    description: "Name for the Docker image"
+  docker_username:
+    description: 'Docker Hub Username'
     required: true
-    default: "default_image_name"
-  tag_name:
-    description: "Tag for the Docker image"
-    required: false
+  image_name:
+    description: 'Docker Image Name with Tag'
+    required: true
 
 runs:
   using: composite
   steps:
-    - name: Set Docker Tag
+    - name: Tag Docker Image
       shell: bash
       run: |
-        if [ -z "${{ inputs.tag_name }}" ]; then
-          echo "TAG=$(date +%s)" >> $GITHUB_ENV
-        else
-          echo "TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
-        fi
+        IMAGE_NAME="${{ inputs.image_name }}"
+        DOCKER_USERNAME="${{ inputs.docker_username }}"
 
-    - name: Validate Image Name
-      shell: bash
-      run: |
-        if [ -z "${{ inputs.image_name }}" ]; then
-          echo "Error: image_name input cannot be empty."
+        # Tag the image with the Docker Hub username
+        if ! docker tag "$IMAGE_NAME" "$DOCKER_USERNAME/$IMAGE_NAME"; then
+          echo "Docker tagging failed!"
           exit 1
         fi
 
-    - name: Build Docker Image
+        echo "Successfully tagged image as: $DOCKER_USERNAME/$IMAGE_NAME"
+
+    - name: Push Docker Image
       shell: bash
       run: |
-        NAME="${{ inputs.image_name }}:$TAG"
-        if ! docker build . --file "${{ inputs.path_dockerfile }}" --tag "$NAME"; then
-          echo "Docker build failed!"
+        DOCKER_USERNAME="${{ inputs.docker_username }}"
+        IMAGE_NAME="${{ inputs.image_name }}"
+
+        # Push the image to Docker Hub
+        if ! docker push "$DOCKER_USERNAME/$IMAGE_NAME"; then
+          echo "Docker push failed!"
           exit 1
         fi
-        echo "DOCKER_IMAGE_NAME=$NAME" >> $GITHUB_ENV
-        docker images
+
+        echo "Successfully pushed Docker image: $DOCKER_USERNAME/$IMAGE_NAME"
