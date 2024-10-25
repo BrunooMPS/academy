@@ -5,10 +5,6 @@ inputs:
     description: "Path to the Dockerfile"
     required: false
     default: "Dockerfile"
-  image_name:
-    description: "Name of the Docker image to create"
-    required: true
-    default: "image-name"
 runs:
   using: composite
   steps:
@@ -19,5 +15,5 @@ runs:
       distribution: 'temurin'
       cache: maven
   - name: Build with Maven
-    shell: bash
-    run: mvn -B package -DskipTests --file pom.xml && docker images
+    run: mvn -B package -DskipTests --file pom.xml
+  
