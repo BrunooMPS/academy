@@ -7,7 +7,8 @@ inputs:
     default: "Dockerfile"
   image_name:
     description: "Name for the Docker image"
-    required: false
+    required: true
+    default: "default_image_name"
   tag_name:
     description: "Tag for the Docker image"
     required: false
