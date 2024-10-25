@@ -24,10 +24,21 @@ runs:
           echo "TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
         fi
 
+    - name: Validate Image Name
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.image_name }}" ]; then
+          echo "Error: image_name input cannot be empty."
+          exit 1
+        fi
+
     - name: Build Docker Image
       shell: bash
       run: |
         NAME="${{ inputs.image_name }}:$TAG"
-        docker build . --file "${{ inputs.path_dockerfile }}" --tag "$NAME"
+        if ! docker build . --file "${{ inputs.path_dockerfile }}" --tag "$NAME"; then
+          echo "Docker build failed!"
+          exit 1
+        fi
         echo "DOCKER_IMAGE_NAME=$NAME" >> $GITHUB_ENV
         docker images
