@@ -1,40 +1,55 @@
 name: Push Docker Image
-description: Push the Docker image to Docker Hub
+description: Push Docker image to Docker Hub
+
 inputs:
   docker_username:
-    description: 'Docker Hub Username'
+    description: "Docker Hub username"
     required: true
-  image_name:
-    description: 'Docker Image Name with Tag'
+  docker_image_name:
+    description: "Name of the Docker image to push"
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Tag Docker Image
+    - name: Validate Inputs
       shell: bash
       run: |
-        IMAGE_NAME="${{ inputs.image_name }}"
-        DOCKER_USERNAME="${{ inputs.docker_username }}"
-
-        # Tag the image with the Docker Hub username
-        if ! docker tag "$IMAGE_NAME" "$DOCKER_USERNAME/$IMAGE_NAME"; then
-          echo "Docker tagging failed!"
+        if [ -z "${{ inputs.docker_username }}" ]; then
+          echo "Error: docker_username input cannot be empty."
+          exit 1
+        fi
+        
+        if [ -z "${{ inputs.docker_image_name }}" ]; then
+          echo "Error: docker_image_name input cannot be empty."
           exit 1
         fi
 
-        echo "Successfully tagged image as: $DOCKER_USERNAME/$IMAGE_NAME"
+    - name: Tag Docker Image
+      shell: bash
+      run: |
+        IMAGE_NAME="${{ inputs.docker_image_name }}"
+        TAG="${{ github.sha }}"  # Using commit SHA as tag, can be adjusted
+        TAGGED_IMAGE="${{ inputs.docker_username }}/$IMAGE_NAME:$TAG"
+        
+        echo "Tagging image as $TAGGED_IMAGE"
+        if ! docker tag "$IMAGE_NAME" "$TAGGED_IMAGE"; then
+          echo "Error tagging image."
+          exit 1
+        fi
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.docker_username }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}  # Ensure to add your Docker Hub password in secrets
 
     - name: Push Docker Image
       shell: bash
       run: |
-        DOCKER_USERNAME="${{ inputs.docker_username }}"
-        IMAGE_NAME="${{ inputs.image_name }}"
-
-        # Push the image to Docker Hub
-        if ! docker push "$DOCKER_USERNAME/$IMAGE_NAME"; then
-          echo "Docker push failed!"
+        TAGGED_IMAGE="${{ inputs.docker_username }}/${{ inputs.docker_image_name }}:${{ github.sha }}"
+        echo "Pushing image $TAGGED_IMAGE to Docker Hub"
+        if ! docker push "$TAGGED_IMAGE"; then
+          echo "Error pushing image to Docker Hub."
           exit 1
         fi
-
-        echo "Successfully pushed Docker image: $DOCKER_USERNAME/$IMAGE_NAME"
