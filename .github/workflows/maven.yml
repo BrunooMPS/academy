@@ -20,10 +20,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: BrunooMPS/academy/.github/actions/maven_build@main
+
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml
+
+      - name: Build Docker Image
+        run: |
+          echo "Building Docker image: image-name"
+          docker build -t image-name .  # Ensure this matches what you will use later
 
       - name: Push Docker Image
-        uses: BrunooMPS/academy/.github/actions/docker_build@main
+        uses: BrunooMPS/academy/.github/actions/push_docker_image@main
         with:
           docker_username: ${{ vars.DOCKERHUB_USERNAME }}
           docker_image_name: image-name
