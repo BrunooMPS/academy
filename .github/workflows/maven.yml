@@ -13,6 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: BrunooMPS/academy/.github/actions/maven_build@main    
+    - uses: BrunooMPS/academy/.github/actions/maven_build@main
     - name: Do neida deu build 
       run: docker build . --file ./src/main/docker/Dockerfile.jvm --tag academy:$(date +%s) && docker images
