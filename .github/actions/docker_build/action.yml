@@ -11,30 +11,26 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build:
     runs-on: ubuntu-latest
     needs: login
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
       - name: Set Docker Tag
-        id: set-tag
         shell: bash
         run: |
-          if [ -z "${{ github.event.inputs.tag_name }}" ]; then
+          if [ -z "${{ inputs.tag_name }}" ]; then
             echo "TAG=latest" >> $GITHUB_ENV
           else
-            echo "TAG=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+            echo "TAG=${{ inputs.tag_name }}" >> $GITHUB_ENV
           fi
 
       - name: Validate Image Name
         shell: bash
         run: |
-          if [ -z "${{ github.event.inputs.image_name }}" ]; then
+          if [ -z "${{ inputs.image_name }}" ]; then
             echo "Error: image_name input cannot be empty."
             exit 1
           fi
@@ -42,8 +38,8 @@ jobs:
       - name: Build Docker Image
         shell: bash
         run: |
-          NAME="${{ github.event.inputs.image_name }}:$TAG"
-          if ! docker build "$(dirname "${{ github.event.inputs.path_dockerfile }}")" --file "${{ github.event.inputs.path_dockerfile }}" --tag "$NAME"; then
+          NAME="${{ inputs.image_name }}:$TAG"
+          if ! docker build "$(dirname "${{ inputs.path_dockerfile }}")" --file "${{ inputs.path_dockerfile }}" --tag "$NAME"; then
             echo "Docker build failed!"
             exit 1
           fi
@@ -54,7 +50,7 @@ jobs:
       - name: Push Docker Image
         shell: bash
         run: |
-          NAME="${{ github.event.inputs.image_name }}:$TAG"
+          NAME="${{ inputs.image_name }}:$TAG"
           if ! docker push "$NAME"; then
             echo "Docker push failed!"
             exit 1
