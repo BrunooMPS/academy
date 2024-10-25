@@ -28,7 +28,7 @@ runs:
     - name: Tag Docker Image
       shell: bash
       run: |
-        IMAGE_NAME="${{ inputs.docker_image_name }}"
+        IMAGE_NAME="image:local"  # Change to use image:local
         TAG="${{ github.sha }}"  # Using commit SHA as tag, can be adjusted
         TAGGED_IMAGE="${{ inputs.docker_username }}/$IMAGE_NAME:$TAG"
         
