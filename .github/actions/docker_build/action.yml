@@ -12,6 +12,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Check images
+      run: docker images
     - name: Validate Inputs
       shell: bash
       run: |
