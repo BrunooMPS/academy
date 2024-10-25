@@ -5,6 +5,10 @@ inputs:
     description: "Path to the Dockerfile"
     required: false
     default: "Dockerfile"
+  image_name:
+    description: "Name of the Docker image to create"
+    required: true
+    default: "image-name"
 runs:
   using: composite
   steps:
