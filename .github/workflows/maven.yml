@@ -21,4 +21,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: BrunooMPS/academy/.github/actions/maven_build@main
-      - uses: BrunooMPS/academy/.github/actions/docker_build@main
+      - name: Run tests
+        run: mvn test
+
+      - name: Push Docker Image
+        uses: BrunooMPS/academy/.github/actions/push_docker_image@main
+        with:
+          docker_username: ${{ vars.DOCKERHUB_USERNAME }}
+          docker_image_name: image-name

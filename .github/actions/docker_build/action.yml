@@ -8,9 +8,6 @@ inputs:
   docker_image_name:
     description: "Name of the Docker image to push"
     required: true
-  docker_tag:
-    description: "Optional: Custom tag for the image"
-    required: false
 
 runs:
   using: composite
@@ -28,23 +25,11 @@ runs:
           exit 1
         fi
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ inputs.docker_username }}
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
-
     - name: Tag Docker Image
       shell: bash
       run: |
         IMAGE_NAME="${{ inputs.docker_image_name }}"
-        TAG="${{ github.sha }}"
-        
-        # Use custom tag if provided
-        if [ ! -z "${{ inputs.docker_tag }}" ]; then
-          TAG="${{ inputs.docker_tag }}"
-        fi
-
+        TAG="${{ github.sha }}"  # Using commit SHA as tag, can be adjusted
         TAGGED_IMAGE="${{ inputs.docker_username }}/$IMAGE_NAME:$TAG"
         
         echo "Tagging image as $TAGGED_IMAGE"
