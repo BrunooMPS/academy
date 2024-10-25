@@ -15,7 +15,7 @@ runs:
     - name: Validate Inputs
       shell: bash
       run: |
-        if [ -z "${{ inputs.docker_username }}" ]; then
+        if [ -z "${{ vars.DOCKERHUB_USERNAME }}" ]; then
           echo "Error: docker_username input cannot be empty."
           exit 1
         fi
@@ -30,7 +30,7 @@ runs:
       run: |
         IMAGE_NAME="${{ inputs.docker_image_name }}"
         TAG="${{ github.sha }}"  # Using commit SHA as tag, can be adjusted
-        TAGGED_IMAGE="${{ inputs.docker_username }}/$IMAGE_NAME:$TAG"
+        TAGGED_IMAGE="${{ vars.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$TAG"
         
         echo "Tagging image as $TAGGED_IMAGE"
         if ! docker tag "$IMAGE_NAME" "$TAGGED_IMAGE"; then
@@ -41,7 +41,7 @@ runs:
     - name: Push Docker Image
       shell: bash
       run: |
-        TAGGED_IMAGE="${{ inputs.docker_username }}/${{ inputs.docker_image_name }}:${{ github.sha }}"
+        TAGGED_IMAGE="${{ vars.DOCKERHUB_USERNAME }}/${{ inputs.docker_image_name }}:${{ github.sha }}"
         echo "Pushing image $TAGGED_IMAGE to Docker Hub"
         if ! docker push "$TAGGED_IMAGE"; then
           echo "Error pushing image to Docker Hub."
